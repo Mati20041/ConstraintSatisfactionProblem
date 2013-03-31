@@ -9,7 +9,7 @@ import java.util.Set;
 public class ConstraintsProblem<T> {
 	List<Coinstraint<T>> coinstraints;
 	List<List<T>>domains;
-	List<Set<T>>restrictedDomain;
+	boolean[][] restrictedDomain;
 	
 	public ConstraintsProblem(int size,List<Coinstraint<T>> coinstraints,List<List<T>>domains){
 		if(domains.size()!=size){
@@ -17,9 +17,9 @@ public class ConstraintsProblem<T> {
 		}
 		this.coinstraints = coinstraints;
 		this.domains = domains;
-		restrictedDomain = new ArrayList<>(size);
+		restrictedDomain = new boolean[size][];
 		for(int i = 0 ; i < size ; ++i){
-			restrictedDomain.add(new HashSet<T>());
+			restrictedDomain[i] = new boolean[domains.get(i).size()];
 		}
 	}
 	

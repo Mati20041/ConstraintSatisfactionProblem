@@ -30,7 +30,7 @@ public class ChessBoard extends JPanel{
 					else
 						g.setColor(Color.gray);
 					g.fillRect(i*boxWidth, j*boxHeight, boxWidth, boxHeight);
-					if(positions.get(i)==j){
+					if(positions.get(i)!=null && positions.get(i)==j){
 						g.setColor(Color.black);
 						g.fillOval(i*boxWidth, j*boxHeight, boxWidth, boxHeight);
 					}

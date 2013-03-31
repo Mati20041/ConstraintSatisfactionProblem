@@ -1,4 +1,4 @@
 ConstraintSatisfactionProblem
 =============================
 
-Simplem engine to solving CSP with example Eight queens puzzle
+Simple engine to solve CSP with example Eight queens puzzle

@@ -14,23 +14,25 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 
 
-import com.lds.mati.CSP.HetmanProblem.HetmansCoinstraint;
+import com.lds.mati.CSP.HetmanProblem.HetmansProblem;
 import com.lds.mati.CSP.engine.CSPSolver;
 import com.lds.mati.CSP.engine.Coinstraint;
 import com.lds.mati.CSP.engine.ConstraintsProblem;
+import com.lds.mati.CSP.engine.Hook;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JCheckBox;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame implements Hook<Integer>{
 
 	private JPanel contentPane;
 	private JTextField textField;
 	private ChessBoard chess;
 	private int boardSize;
 	private JButton btnNewButton;
+	private JCheckBox chckbxPodgld;
 	/**
 	 * @wbp.nonvisual location=456,429
 	 */
@@ -57,6 +59,9 @@ public class GUI extends JFrame {
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.SOUTH);
+		
+		chckbxPodgld = new JCheckBox("Podgl\u0105d");
+		panel.add(chckbxPodgld);
 		
 		JLabel lblNewLabel = new JLabel("Liczba hetmanów");
 		panel.add(lblNewLabel);
@@ -111,30 +116,42 @@ public class GUI extends JFrame {
 			
 			@Override
 			public void run() {
-				List<Integer> result = runScript(rdbtnNewRadioButton.isSelected(), boardSize);
-				chess.setPositions(result);
+				List<Integer> result = runScript(rdbtnNewRadioButton.isSelected(), chckbxPodgld.isSelected(), boardSize);
+				if(result!=null)
+					chess.setPositions(result);
+				else
+					JOptionPane.showMessageDialog(GUI.this, "Brak rozwi¹zania!");
 				btnNewButton.setEnabled(true);
 			}
 		}).start();
 	}
 
-	private List<Integer> runScript(boolean selected,int boardSize) {
-		List<Coinstraint<Integer>> coinstraints = new ArrayList<>(boardSize);
-		List<List<Integer>> domains = new ArrayList<>(boardSize);
-		for(int i = 0 ; i < boardSize ; ++i){
-			coinstraints.add(new HetmansCoinstraint(i));
-			List<Integer> tempDom = new ArrayList<>(8);
-			for(int j = 0 ; j < boardSize ; ++j){
-				tempDom.add(j);
-			}
-			domains.add(tempDom);
-		}
+	private List<Integer> runScript(boolean backtracking,boolean view,int boardSize) {
+		HetmansProblem factory = HetmansProblem.getFactory();
+		List<Coinstraint<Integer>> coinstraints = factory.getCoinstraints(boardSize);
+		List<List<Integer>> domains = factory.getDomain(boardSize);
+		
 		ConstraintsProblem<Integer> problem = new ConstraintsProblem<Integer>(boardSize, coinstraints, domains);
 		CSPSolver<Integer> solver = new CSPSolver<>();
 		long currentTime = System.currentTimeMillis();
-		List<Integer> result =  solver.backTracking(problem);
+		List<Integer> result;
+		if(backtracking)
+			if(view)
+				result =  solver.backTracking(problem,this);
+			else
+				result =  solver.backTracking(problem);
+		else 
+			if(view)
+				result =  solver.forwardChecking(problem,this);
+			else
+				result =  solver.forwardChecking(problem);
 		System.out.println("Czas dzia³ania "+(System.currentTimeMillis()-currentTime)+" ms");
 		return result;
+	}
+
+	@Override
+	public void partialResult(List<Integer> result) {
+		chess.setPositions(result);
 	}
 
 }
