@@ -16,7 +16,7 @@ public class HetmansCoinstraint implements Coinstraint<Integer> {
 		for (int i = 0; i < vertices.length; ++i) {
 			Integer position2 = vertices[i];
 			if(position2==null)
-				continue;
+				break;
 			if ( i!=hetman
 					&& (Math.abs(hetman - i) == Math.abs(position2 - position) || position2 == position)) {
 				return false;
