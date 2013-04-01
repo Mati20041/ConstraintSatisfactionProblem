@@ -77,13 +77,11 @@ public class CSPSolver<T> {
 					vertices.set(j, null);
 				}
 				if (isEmptyDomain) {
-					--j;
-					clearRestrictedDomains(problem, domainIndex, j);
-					domainIndex[j - 1] = domainIndex[j - 1] + 1;
-					i = j-2;
+					clearRestrictedDomains(problem, domainIndex, i+1);
+					domainIndex[i] = domainIndex[i] + 1;
+					--i;
 					isEmptyDomain = false;
 				}
-
 			}
 		}
 		return vertices;
@@ -167,10 +165,9 @@ public class CSPSolver<T> {
 					vertices.set(j, null);
 				}
 				if (isEmptyDomain) {
-					--j;
-					clearRestrictedDomains(problem, domainIndex, j);
-					domainIndex[j - 1] = domainIndex[j - 1] + 1;
-					i = j-2;
+					clearRestrictedDomains(problem, domainIndex, i+1);
+					domainIndex[i] = domainIndex[i] + 1;
+					--i;
 					isEmptyDomain = false;
 				}
 				hook.partialResult(vertices);

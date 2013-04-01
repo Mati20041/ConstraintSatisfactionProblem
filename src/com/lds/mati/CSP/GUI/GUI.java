@@ -2,6 +2,7 @@ package com.lds.mati.CSP.GUI;
 
 import java.awt.BorderLayout;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +15,7 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 
 
-import com.lds.mati.CSP.HetmanProblem.HetmansProblem;
+import com.lds.mati.CSP.HetmanProblem.HetmansProblemFactory;
 import com.lds.mati.CSP.engine.CSPSolver;
 import com.lds.mati.CSP.engine.Coinstraint;
 import com.lds.mati.CSP.engine.ConstraintsProblem;
@@ -22,8 +23,22 @@ import com.lds.mati.CSP.engine.Hook;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import javax.swing.JCheckBox;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import javax.swing.border.TitledBorder;
 
 public class GUI extends JFrame implements Hook<Integer>{
 
@@ -38,6 +53,12 @@ public class GUI extends JFrame implements Hook<Integer>{
 	 */
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JRadioButton rdbtnNewRadioButton;
+	private JMenuBar menuBar;
+	private JMenu mnNewMenu;
+	private JMenuItem mntmZapiszWynik;
+	private JLabel lblInfo;
+	private JScrollPane scrollPane;
+	private JTextArea textArea;
 
 
 	/**
@@ -51,7 +72,21 @@ public class GUI extends JFrame implements Hook<Integer>{
 
 	private void initGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 646, 467);
+		setBounds(100, 100, 781, 467);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnNewMenu = new JMenu("Plik");
+		menuBar.add(mnNewMenu);
+		
+		mntmZapiszWynik = new JMenuItem("Zapisz wynik");
+		mntmZapiszWynik.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				saveResult();
+			}
+		});
+		mnNewMenu.add(mntmZapiszWynik);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -88,6 +123,18 @@ public class GUI extends JFrame implements Hook<Integer>{
 		buttonGroup.add(rdbtnNewRadioButton);
 		buttonGroup.add(rdbtnNewRadioButton_1);
 		
+		lblInfo = new JLabel("Info");
+		panel.add(lblInfo);
+		lblInfo.setBounds(new Rectangle(0, 0, 300, 200));
+		lblInfo.setSize(new Dimension(200, 300));
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		
+		scrollPane = new JScrollPane(textArea);
+		scrollPane.setPreferredSize(new Dimension(200, 50));
+		panel.add(scrollPane);
+		
 		JPanel panel_2 = new JPanel();
 		contentPane.add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
@@ -100,6 +147,31 @@ public class GUI extends JFrame implements Hook<Integer>{
 		panel_2.add(chess);
 	}
 
+
+	protected void saveResult() {
+		List<Integer> positions = chess.getPositions();
+		if(positions!=null){
+			try {
+				BufferedImage im = new BufferedImage(positions.size()*20,positions.size()*20,BufferedImage.TYPE_INT_RGB);
+				chess.paintImage(im.getWidth(), im.getHeight(), im.getGraphics());
+				ImageIO.write(im, "PNG", new File("result.png"));
+			} catch (IOException|OutOfMemoryError e) {
+				JOptionPane.showMessageDialog(this, "Brak pamiêci na zapis obrazka! Kontynuujê...");
+			}
+
+			try {
+				PrintWriter wyj = new PrintWriter(new File("result.txt"));
+				for(int i = 0 ; i < positions.size() ; ++i){
+					wyj.println(i+" "+positions.get(i));
+				}
+				wyj.close();
+				JOptionPane.showMessageDialog(this, "Zapisano!");
+			} catch (FileNotFoundException e) {
+				JOptionPane.showMessageDialog(this, "B³¹d zapisu wyniku!");
+			}
+		}
+		
+	}
 
 	private void buttonPressed() {
 		boardSize = 0;
@@ -127,7 +199,7 @@ public class GUI extends JFrame implements Hook<Integer>{
 	}
 
 	private List<Integer> runScript(boolean backtracking,boolean view,int boardSize) {
-		HetmansProblem factory = HetmansProblem.getFactory();
+		HetmansProblemFactory factory = HetmansProblemFactory.getFactory();
 		List<Coinstraint<Integer>> coinstraints = factory.getCoinstraints(boardSize);
 		List<List<Integer>> domains = factory.getDomain(boardSize);
 		
@@ -145,7 +217,10 @@ public class GUI extends JFrame implements Hook<Integer>{
 				result =  solver.forwardChecking(problem,this);
 			else
 				result =  solver.forwardChecking(problem);
-		System.out.println("Czas dzia³ania "+(System.currentTimeMillis()-currentTime)+" ms");
+		long runTime =  System.currentTimeMillis()-currentTime;
+		System.out.println("Czas dzia³ania "+runTime+" ms");
+		textArea.append("Czas dzia³ania "+runTime+" ms\n");
+		textArea.setCaretPosition(textArea.getDocument().getLength());
 		return result;
 	}
 

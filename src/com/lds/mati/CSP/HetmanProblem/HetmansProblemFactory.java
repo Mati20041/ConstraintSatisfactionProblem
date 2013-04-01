@@ -6,14 +6,14 @@ import java.util.List;
 import com.lds.mati.CSP.engine.Coinstraint;
 import com.lds.mati.CSP.engine.DomainCoinstrantFactory;
 
-public class HetmansProblem implements DomainCoinstrantFactory<Integer>{
-	private static HetmansProblem singleton;
-	private HetmansProblem(){
+public class HetmansProblemFactory implements DomainCoinstrantFactory<Integer>{
+	private static HetmansProblemFactory singleton;
+	private HetmansProblemFactory(){
 	}
 	
-	public static HetmansProblem getFactory(){
+	public static HetmansProblemFactory getFactory(){
 		if(singleton==null)
-			singleton = new HetmansProblem();
+			singleton = new HetmansProblemFactory();
 		return singleton;
 	}
 	
