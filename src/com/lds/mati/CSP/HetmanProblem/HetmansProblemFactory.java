@@ -1,5 +1,6 @@
 package com.lds.mati.CSP.HetmanProblem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,23 +19,23 @@ public class HetmansProblemFactory implements DomainCoinstrantFactory<Integer>{
 	}
 	
 	@Override
-	public List<List<Integer>> getDomain(int arg) {
-		List<List<Integer>> domains = new ArrayList<>(arg);
+	public List<Integer>[] getDomain(int arg) {
+		List<Integer>[] domains = (List<Integer>[]) Array.newInstance(List.class, arg);
 		for(int i = 0 ; i < arg ; ++i){
-			List<Integer> tempDom = new ArrayList<>(8);
+			List<Integer> tempDom = new ArrayList<>(arg);
 			for(int j = 0 ; j < arg ; ++j){
 				tempDom.add(j);
 			}
-			domains.add(tempDom);
+			domains[i] = tempDom;
 		}
 		return domains;
 	}
 
 	@Override
-	public List<Coinstraint<Integer>> getCoinstraints(int arg) {
-		List<Coinstraint<Integer>> coinstraints = new ArrayList<>(arg);
+	public Coinstraint<Integer>[] getCoinstraints(int arg) {
+		Coinstraint<Integer>[] coinstraints = (Coinstraint<Integer>[]) Array.newInstance(Coinstraint.class, arg);
 		for(int i = 0 ; i < arg ; ++i){
-			coinstraints.add(new HetmansCoinstraint(i));
+			coinstraints[i] = new HetmansCoinstraint(i);
 		}
 		return coinstraints;
 	}

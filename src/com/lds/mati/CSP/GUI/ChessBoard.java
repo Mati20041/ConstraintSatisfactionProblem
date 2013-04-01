@@ -2,23 +2,20 @@ package com.lds.mati.CSP.GUI;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JPanel;
 
 public class ChessBoard extends JPanel {
-	private ArrayList<Integer> positions;
+	private Integer[] positions;
 
-	public void setPositions(List<Integer> result) {
-		positions = (ArrayList<Integer>) result;
+	public void setPositions(Integer[] result) {
+		positions =  result;
 
 		repaint();
 	}
 
-	public List<Integer> getPositions() {
+	public Integer[] getPositions() {
 		if (positions != null)
-			return (List<Integer>) positions.clone();
+			return (Integer[]) positions.clone();
 		else
 			return null;
 	}
@@ -26,12 +23,12 @@ public class ChessBoard extends JPanel {
 	public void paintImage(int width, int height, Graphics g){
 		g.fillRect(0, 0, width, height);
 		if (positions != null) {
-			double boxWidth = 1. * width / (1. * positions.size());
-			double boxHeight = 1. * height / (1. * positions.size());
+			double boxWidth = 1. * width / (1. * positions.length);
+			double boxHeight = 1. * height / (1. * positions.length);
 			int bwpx = (int) boxWidth;
 			int bhpx = (int) boxHeight;
-			for (int i = 0; i < positions.size(); ++i) {
-				for (int j = 0; j < positions.size(); ++j) {
+			for (int i = 0; i < positions.length; ++i) {
+				for (int j = 0; j < positions.length; ++j) {
 					if ((i + j) % 2 == 0)
 						g.setColor(Color.white);
 					else
@@ -39,7 +36,7 @@ public class ChessBoard extends JPanel {
 					int x = (int) (i * boxWidth);
 					int y = (int) (j * boxHeight);
 					g.fillRect(x, y, bwpx, bhpx);
-					if (positions.get(i) != null && positions.get(i) == j) {
+					if (positions[i] != null && positions[i] == j) {
 						g.setColor(Color.black);
 						g.fillOval(x, y, bwpx, bhpx);
 					}

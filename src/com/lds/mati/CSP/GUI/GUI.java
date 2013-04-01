@@ -34,11 +34,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import javax.swing.border.TitledBorder;
 
 public class GUI extends JFrame implements Hook<Integer>{
 
@@ -149,10 +147,10 @@ public class GUI extends JFrame implements Hook<Integer>{
 
 
 	protected void saveResult() {
-		List<Integer> positions = chess.getPositions();
+		Integer[] positions = chess.getPositions();
 		if(positions!=null){
 			try {
-				BufferedImage im = new BufferedImage(positions.size()*20,positions.size()*20,BufferedImage.TYPE_INT_RGB);
+				BufferedImage im = new BufferedImage(positions.length*20,positions.length*20,BufferedImage.TYPE_INT_RGB);
 				chess.paintImage(im.getWidth(), im.getHeight(), im.getGraphics());
 				ImageIO.write(im, "PNG", new File("result.png"));
 			} catch (IOException|OutOfMemoryError e) {
@@ -161,8 +159,8 @@ public class GUI extends JFrame implements Hook<Integer>{
 
 			try {
 				PrintWriter wyj = new PrintWriter(new File("result.txt"));
-				for(int i = 0 ; i < positions.size() ; ++i){
-					wyj.println(i+" "+positions.get(i));
+				for(int i = 0 ; i < positions.length ; ++i){
+					wyj.println(i+" "+positions[i]);
 				}
 				wyj.close();
 				JOptionPane.showMessageDialog(this, "Zapisano!");
@@ -188,7 +186,7 @@ public class GUI extends JFrame implements Hook<Integer>{
 			
 			@Override
 			public void run() {
-				List<Integer> result = runScript(rdbtnNewRadioButton.isSelected(), chckbxPodgld.isSelected(), boardSize);
+				Integer[] result = runScript(rdbtnNewRadioButton.isSelected(), chckbxPodgld.isSelected(), boardSize);
 				if(result!=null)
 					chess.setPositions(result);
 				else
@@ -198,15 +196,15 @@ public class GUI extends JFrame implements Hook<Integer>{
 		}).start();
 	}
 
-	private List<Integer> runScript(boolean backtracking,boolean view,int boardSize) {
+	private Integer[] runScript(boolean backtracking,boolean view,int boardSize) {
 		HetmansProblemFactory factory = HetmansProblemFactory.getFactory();
-		List<Coinstraint<Integer>> coinstraints = factory.getCoinstraints(boardSize);
-		List<List<Integer>> domains = factory.getDomain(boardSize);
+		Coinstraint<Integer>[] coinstraints = factory.getCoinstraints(boardSize);
+		List<Integer>[] domains = factory.getDomain(boardSize);
 		
-		ConstraintsProblem<Integer> problem = new ConstraintsProblem<Integer>(boardSize, coinstraints, domains);
+		ConstraintsProblem<Integer> problem = new ConstraintsProblem<Integer>(coinstraints, domains);
 		CSPSolver<Integer> solver = new CSPSolver<>();
 		long currentTime = System.currentTimeMillis();
-		List<Integer> result;
+		Integer[] result;
 		if(backtracking)
 			if(view)
 				result =  solver.backTracking(problem,this);
@@ -225,7 +223,7 @@ public class GUI extends JFrame implements Hook<Integer>{
 	}
 
 	@Override
-	public void partialResult(List<Integer> result) {
+	public void partialResult(Integer[] result) {
 		chess.setPositions(result);
 	}
 

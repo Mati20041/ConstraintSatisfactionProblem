@@ -1,24 +1,21 @@
 package com.lds.mati.CSP.engine;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Set;
 
 
 
 public class CSPSolver<T> {
 	
-	 List<T> vertices;
+	 T[] vertices;
 	
 
-	public List<T> backTracking(ConstraintsProblem<T> problem) {
-		vertices = new ArrayList<>(problem.domains.size());
-		for (int i = 0; i < problem.domains.size(); ++i) {
-			vertices.add(null);
-		}
-		int[] domainIndex = new int[vertices.size()];
-		for (int i = 0; i < vertices.size(); ++i) {
-			if (domainIndex[i] >= problem.domains.get(i).size()) {
+	public T[] backTracking(ConstraintsProblem<T> problem) {
+		Class sampleClass = problem.domains[0].get(0).getClass();
+		vertices = (T[]) Array.newInstance(problem.domains[0].get(0).getClass(), problem.domains.length);
+		int[] domainIndex = new int[vertices.length];
+		for (int i = 0; i < vertices.length; ++i) {
+			if (domainIndex[i] >= problem.domains[i].size()) {
 				if (i == 0) {
 					return null;
 				} else {
@@ -27,8 +24,8 @@ public class CSPSolver<T> {
 					i -= 2;
 				}
 			} else {
-				vertices.set(i, problem.domains.get(i).get(domainIndex[i]));
-				if (!problem.coinstraints.get(i).isSatisfied(vertices)) {
+				vertices[i] = problem.domains[i].get(domainIndex[i]);
+				if (!problem.coinstraints[i].isSatisfied(vertices)) {
 					domainIndex[i] = domainIndex[i] + 1;
 					--i;
 				}
@@ -37,16 +34,14 @@ public class CSPSolver<T> {
 		return vertices;
 	}
 
-	public List<T> forwardChecking(ConstraintsProblem<T> problem) {
-		vertices = new ArrayList<>(problem.domains.size());
-		for (int i = 0; i < problem.domains.size(); ++i) {
-			vertices.add(null);
-		}
-		int[] domainIndex = new int[vertices.size()];
+	public T[] forwardChecking(ConstraintsProblem<T> problem) {
+		Class sampleClass = problem.domains[0].get(0).getClass();
+		vertices = (T[]) Array.newInstance(problem.domains[0].get(0).getClass(), problem.domains.length);
+		int[] domainIndex = new int[vertices.length];
 		boolean isEmptyDomain = false;
 		
-		for (int i = 0; i < vertices.size(); ++i) {
-			List<T> currentDomain = problem.domains.get(i);
+		for (int i = 0; i < vertices.length; ++i) {
+			List<T> currentDomain = problem.domains[i];
 			while (domainIndex[i] < currentDomain.size()
 					&& problem.restrictedDomain[i][domainIndex[i]]) {
 				domainIndex[i] = domainIndex[i] + 1;
@@ -60,21 +55,21 @@ public class CSPSolver<T> {
 					i -= 2;
 				}
 			} else {
-				vertices.set(i, currentDomain.get(domainIndex[i]));
+				vertices[i] = currentDomain.get(domainIndex[i]);
 				int j = i + 1;
-				for (; j < vertices.size() && !isEmptyDomain; ++j) {
-					List<T> temporaryDomain = problem.domains.get(j);
-					Coinstraint<T> temporaryCoinstraint = problem.coinstraints.get(j);
+				for (; j < vertices.length && !isEmptyDomain; ++j) {
+					List<T> temporaryDomain = problem.domains[j];
+					Coinstraint<T> temporaryCoinstraint = problem.coinstraints[j];
 					isEmptyDomain = true;
 					for (int k = 0; k < temporaryDomain.size() && isEmptyDomain; ++k) {
-						vertices.set(j, temporaryDomain.get(k));
+						vertices[j] = temporaryDomain.get(k);
 						if (!temporaryCoinstraint.isSatisfied(vertices)) {
 							problem.restrictedDomain[j][k]=true;
 						} else{
 							isEmptyDomain = false;
 						}
 					}
-					vertices.set(j, null);
+					vertices[j] = null;
 				}
 				if (isEmptyDomain) {
 					clearRestrictedDomains(problem, domainIndex, i+1);
@@ -88,7 +83,7 @@ public class CSPSolver<T> {
 	}
 
 
-	private static <T> void clearRestrictedDomains(
+	private void clearRestrictedDomains(
 			ConstraintsProblem<T> problem, int[] domainIndex, int i) {
 		for (int j = i; j < problem.restrictedDomain.length; ++j) {
 			problem.restrictedDomain[j] = new boolean[problem.restrictedDomain[i].length];
@@ -96,15 +91,13 @@ public class CSPSolver<T> {
 		}
 	}
 
-	public List<T> backTracking(ConstraintsProblem<T> problem,
+	public T[] backTracking(ConstraintsProblem<T> problem,
 			Hook<T> hook) {
-		vertices = new ArrayList<>(problem.domains.size());
-		for (int i = 0; i < problem.domains.size(); ++i) {
-			vertices.add(null);
-		}
-		int[] domainIndex = new int[vertices.size()];
-		for (int i = 0; i < vertices.size(); ++i) {
-			if (domainIndex[i] >= problem.domains.get(i).size()) {
+		Class sampleClass = problem.domains[0].get(0).getClass();
+		vertices = (T[]) Array.newInstance(problem.domains[0].get(0).getClass(), problem.domains.length);
+		int[] domainIndex = new int[vertices.length];
+		for (int i = 0; i < vertices.length; ++i) {
+			if (domainIndex[i] >= problem.domains[i].size()) {
 				if (i == 0) {
 					return null;
 				} else {
@@ -113,8 +106,8 @@ public class CSPSolver<T> {
 					i -= 2;
 				}
 			} else {
-				vertices.set(i, problem.domains.get(i).get(domainIndex[i]));
-				if (!problem.coinstraints.get(i).isSatisfied(vertices)) {
+				vertices[i] = problem.domains[i].get(domainIndex[i]);
+				if (!problem.coinstraints[i].isSatisfied(vertices)) {
 					domainIndex[i] = domainIndex[i] + 1;
 					--i;
 				}
@@ -124,17 +117,15 @@ public class CSPSolver<T> {
 		return vertices;
 	}
 
-	public List<T> forwardChecking(ConstraintsProblem<T> problem,
+	public T[] forwardChecking(ConstraintsProblem<T> problem,
 			Hook<T> hook) {
-		vertices = new ArrayList<>(problem.domains.size());
-		for (int i = 0; i < problem.domains.size(); ++i) {
-			vertices.add(null);
-		}
-		int[] domainIndex = new int[vertices.size()];
+		Class sampleClass = problem.domains[0].get(0).getClass();
+		vertices = (T[]) Array.newInstance(problem.domains[0].get(0).getClass(), problem.domains.length);
+		int[] domainIndex = new int[vertices.length];
 		boolean isEmptyDomain = false;
 		
-		for (int i = 0; i < vertices.size(); ++i) {
-			List<T> currentDomain = problem.domains.get(i);
+		for (int i = 0; i < vertices.length; ++i) {
+			List<T> currentDomain = problem.domains[i];
 			while (domainIndex[i] < currentDomain.size()
 					&& problem.restrictedDomain[i][domainIndex[i]]) {
 				domainIndex[i] = domainIndex[i] + 1;
@@ -148,21 +139,21 @@ public class CSPSolver<T> {
 					i -= 2;
 				}
 			} else {
-				vertices.set(i, currentDomain.get(domainIndex[i]));
+				vertices[i] = currentDomain.get(domainIndex[i]);
 				int j = i + 1;
-				for (; j < vertices.size() && !isEmptyDomain; ++j) {
-					List<T> temporaryDomain = problem.domains.get(j);
-					Coinstraint<T> temporaryCoinstraint = problem.coinstraints.get(j);
+				for (; j < vertices.length && !isEmptyDomain; ++j) {
+					List<T> temporaryDomain = problem.domains[j];
+					Coinstraint<T> temporaryCoinstraint = problem.coinstraints[j];
 					isEmptyDomain = true;
 					for (int k = 0; k < temporaryDomain.size() && isEmptyDomain; ++k) {
-						vertices.set(j, temporaryDomain.get(k));
+						vertices[j] = temporaryDomain.get(k);
 						if (!temporaryCoinstraint.isSatisfied(vertices)) {
 							problem.restrictedDomain[j][k]=true;
 						} else{
 							isEmptyDomain = false;
 						}
 					}
-					vertices.set(j, null);
+					vertices[j] = null;
 				}
 				if (isEmptyDomain) {
 					clearRestrictedDomains(problem, domainIndex, i+1);
@@ -170,8 +161,8 @@ public class CSPSolver<T> {
 					--i;
 					isEmptyDomain = false;
 				}
-				hook.partialResult(vertices);
 			}
+			hook.partialResult(vertices);
 		}
 		return vertices;
 	}

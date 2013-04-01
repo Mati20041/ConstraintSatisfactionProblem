@@ -1,6 +1,5 @@
 package com.lds.mati.CSP.HetmanProblem;
 
-import java.util.List;
 
 import com.lds.mati.CSP.engine.Coinstraint;
 
@@ -14,13 +13,13 @@ public class HetmansCoinstraint implements Coinstraint<Integer> {
 	}
 
 	@Override
-	public boolean isSatisfied(List<Integer> vertices) {
+	public boolean isSatisfied(Integer[] vertices) {
 		if (hetman == 0) {
 			return true;
 		} else {
-			int position = vertices.get(hetman);
+			int position = vertices[hetman];
 			for (int i = 0; i < hetman; ++i) {
-				Integer position2 = vertices.get(i);
+				Integer position2 = vertices[i];
 				if(position2 == null)
 					continue;
 				if (hetman - i == Math.abs(position2 - position) || position2 == position) {
