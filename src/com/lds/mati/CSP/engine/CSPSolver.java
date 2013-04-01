@@ -7,10 +7,11 @@ public class CSPSolver<T> {
 
     T[] vertices;
 
-    public T[] backTracking(ConstraintsProblem<T> problem) {
+    @SuppressWarnings({ "rawtypes", "unchecked"})
+	public T[] backTracking(ConstraintsProblem<T> problem) {
         Class sampleClass = problem.domains[0].get(0).getClass();
         vertices = (T[]) Array.newInstance(
-                problem.domains[0].get(0).getClass(), problem.domains.length);
+                sampleClass, problem.domains.length);
         int[] domainIndex = new int[vertices.length];
         for (int i = 0; i < vertices.length; ++i) {
             if (domainIndex[i] >= problem.domains[i].size()) {
@@ -33,10 +34,11 @@ public class CSPSolver<T> {
         return vertices;
     }
 
-    public T[] forwardChecking(ConstraintsProblem<T> problem) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public T[] forwardChecking(ConstraintsProblem<T> problem) {
         Class sampleClass = problem.domains[0].get(0).getClass();
         vertices = (T[]) Array.newInstance(
-                problem.domains[0].get(0).getClass(), problem.domains.length);
+        		sampleClass, problem.domains.length);
         int[] domainIndex = new int[vertices.length];
         boolean isEmptyDomain = false;
 
@@ -92,10 +94,11 @@ public class CSPSolver<T> {
         }
     }
 
-    public T[] backTracking(ConstraintsProblem<T> problem, Hook<T> hook) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public T[] backTracking(ConstraintsProblem<T> problem, Hook<T> hook) {
         Class sampleClass = problem.domains[0].get(0).getClass();
         vertices = (T[]) Array.newInstance(
-                problem.domains[0].get(0).getClass(), problem.domains.length);
+                sampleClass, problem.domains.length);
         int[] domainIndex = new int[vertices.length];
         for (int i = 0; i < vertices.length; ++i) {
             if (domainIndex[i] >= problem.domains[i].size()) {
@@ -119,10 +122,11 @@ public class CSPSolver<T> {
         return vertices;
     }
 
-    public T[] forwardChecking(ConstraintsProblem<T> problem, Hook<T> hook) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public T[] forwardChecking(ConstraintsProblem<T> problem, Hook<T> hook) {
         Class sampleClass = problem.domains[0].get(0).getClass();
         vertices = (T[]) Array.newInstance(
-                problem.domains[0].get(0).getClass(), problem.domains.length);
+        		sampleClass, problem.domains.length);
         int[] domainIndex = new int[vertices.length];
         boolean isEmptyDomain = false;
 
